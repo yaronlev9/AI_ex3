@@ -228,6 +228,19 @@ def independent_pair(a1, a2):
     a1.is_neg_effect(p) returns true is p is in a1.get_delete()
     """
     "*** YOUR CODE HERE ***"
+    for addition_val in a1.get_add():
+        if a2.is_neg_effect(addition_val):
+            return False
+    for addition_val in a2.get_add():
+        if a1.is_neg_effect(addition_val):
+            return False
+    for deletion_val in a1.get_delete:
+        if a2.is_pre_cond(deletion_val):
+            return False
+    for deletion_val in a2.get_delete:
+        if a1.is_pre_cond(deletion_val):
+            return False
+    return True
 
 
 if __name__ == '__main__':
