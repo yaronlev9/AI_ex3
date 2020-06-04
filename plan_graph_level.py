@@ -63,8 +63,8 @@ class PlanGraphLevel(object):
             if not previous_proposition_layer.all_preconds_in_layer(action):
                 continue
             else:
-                all_combinations = [previous_proposition_layer.is_mutex(cond1, cond2) for cond1 in action.getPre()
-                                    for cond2 in action.getPre() if cond1 != cond2]
+                all_combinations = [previous_proposition_layer.is_mutex(cond1, cond2) for cond1 in action.get_pre()
+                                    for cond2 in action.get_pre() if cond1 != cond2]
                 if not any(all_combinations):
                     self.action_layer.add_action(action)
 
@@ -84,7 +84,7 @@ class PlanGraphLevel(object):
                             for action2 in current_layer_actions if action1 != action2]
         for combination in all_combinations:
             if mutex_actions(combination[0], combination[1], previous_layer_mutex_proposition):
-                if Pair(combination[0], combination[1]) not in self.action_layer.mutexActions:
+                if Pair(combination[0], combination[1]) not in self.action_layer.get_mutex_actions():
                     self.action_layer.add_mutex_actions(combination[0], combination[1])
 
     def update_proposition_layer(self):
@@ -103,6 +103,11 @@ class PlanGraphLevel(object):
         """
         current_layer_actions = self.action_layer.get_actions()
         "*** YOUR CODE HERE ***"
+        for action in current_layer_actions:
+            for proposition in action.get_add():
+                if proposition not in self.proposition_layer.get_propositions():
+                    self.proposition_layer.add_proposition(proposition)
+                proposition.add_producer(action)
 
     def update_mutex_proposition(self):
         """
@@ -116,6 +121,12 @@ class PlanGraphLevel(object):
         current_layer_propositions = self.proposition_layer.get_propositions()
         current_layer_mutex_actions = self.action_layer.get_mutex_actions()
         "*** YOUR CODE HERE ***"
+        combinations = [(proposition1, proposition2) for proposition1 in current_layer_propositions
+                        for proposition2 in current_layer_propositions if proposition1 != proposition2]
+        for pair in combinations:
+            if mutex_propositions(pair[0], pair[1], current_layer_mutex_actions) and \
+                    Pair(pair[0], pair[1]) not in self.proposition_layer.get_mutex_props():
+                self.proposition_layer.add_mutex_prop(pair[0], pair[1])
 
     def expand(self, previous_layer):
         """
@@ -130,6 +141,10 @@ class PlanGraphLevel(object):
         previous_layer_mutex_proposition = previous_proposition_layer.get_mutex_props()
 
         "*** YOUR CODE HERE ***"
+        self.update_action_layer(previous_proposition_layer)
+        self.update_mutex_actions(previous_layer_mutex_proposition)
+        self.update_proposition_layer()
+        self.update_mutex_proposition()
 
     def expand_without_mutex(self, previous_layer):
         """

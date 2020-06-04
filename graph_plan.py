@@ -234,10 +234,10 @@ def independent_pair(a1, a2):
     for addition_val in a2.get_add():
         if a1.is_neg_effect(addition_val):
             return False
-    for deletion_val in a1.get_delete:
+    for deletion_val in a1.get_delete():
         if a2.is_pre_cond(deletion_val):
             return False
-    for deletion_val in a2.get_delete:
+    for deletion_val in a2.get_delete():
         if a1.is_pre_cond(deletion_val):
             return False
     return True
@@ -257,10 +257,12 @@ if __name__ == '__main__':
         problem = str(sys.argv[2])
 
     gp = GraphPlan(domain, problem)
-    start = time.clock()
+    # start = time.clock()
     plan = gp.graph_plan()
-    elapsed = time.clock() - start
     if plan is not None:
-        print("Plan found with %d actions in %.2f seconds" % (len([act for act in plan if not act.is_noop()]), elapsed))
-    else:
-        print("Could not find a plan in %.2f seconds" % elapsed)
+        print("Plan found with %d actions" % (len([act for act in plan if not act.is_noop()])))
+    # elapsed = time.clock() - start
+    # if plan is not None:
+    #     print("Plan found with %d actions in %.2f seconds" % (len([act for act in plan if not act.is_noop()]), elapsed))
+    # else:
+        # print("Could not find a plan in %.2f seconds" % elapsed)
