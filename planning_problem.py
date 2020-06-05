@@ -42,12 +42,14 @@ class PlanningProblem:
 
     def get_start_state(self):
         "*** YOUR CODE HERE ***"
+        return self.initialState
 
     def is_goal_state(self, state):
         """
         Hint: you might want to take a look at goal_state_not_in_prop_payer function
         """
         "*** YOUR CODE HERE ***"
+        return not self.goal_state_not_in_prop_layer(state)
 
     def get_successors(self, state):
         """
@@ -64,9 +66,25 @@ class PlanningProblem:
         """
         self.expanded += 1
         "*** YOUR CODE HERE ***"
+        result = []
+        flag = False
+        for action in self.actions:
+            if not action.is_noop():
+                for pre_cond in action.get_pre():
+                    if pre_cond not in state:
+                        flag = True
+                        break
+                if not flag:
+                    successor = state
+                    for prop in action.get_add():
+                        if prop not in action.get_delete() and prop not in state:
+                            successor += prop
+                    result.append((successor, action, 1))
+                flag = False
+        return result
 
     @staticmethod
-    def get_cost_of_actions( actions):
+    def get_cost_of_actions(actions):
         return len(actions)
 
     def goal_state_not_in_prop_layer(self, propositions):
@@ -106,6 +124,24 @@ def max_level(state, planning_problem):
     pg_init.set_proposition_layer(prop_layer_init)   #update the new plan graph level with the the proposition layer
     """
     "*** YOUR CODE HERE ***"
+    prop_layer_init = PropositionLayer()  # create a new proposition layer
+    for prop in state:
+        prop_layer_init.add_proposition(prop)  # update the proposition layer with the propositions of the state
+    pg_init = PlanGraphLevel()  # create a new plan graph level (level is the action layer and the propositions layer)
+    pg_init.set_proposition_layer(prop_layer_init)  # update the new plan graph level with the the proposition layer
+    level = 0
+    infinity = float('inf')
+    proposition_layer = pg_init.get_proposition_layer()
+    current_props = proposition_layer.get_propositions()
+    plans_list = [pg_init]
+    while not is_fixed(plans_list, level) and not planning_problem.is_goal_state(current_props):
+        pg_init = PlanGraphLevel()
+        current_props = pg_init.expand_without_mutex(pg_init)
+        plans_list += [pg_init]
+        level += 1
+    if is_fixed(plans_list, level):
+        return infinity
+    return level
 
 
 def level_sum(state, planning_problem):
