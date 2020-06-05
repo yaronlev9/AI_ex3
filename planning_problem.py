@@ -139,6 +139,7 @@ def max_level(state, planning_problem):
             pg_init = next_pg_init
             plans_list += [pg_init]
             level += 1
+            current_props = pg_init.get_proposition_layer().get_propositions()
     return level
 
 
@@ -193,8 +194,6 @@ if __name__ == '__main__':
     plan = a_star_search(prob, heuristic)
     elapsed = time.clock() - start
     if plan is not None:
-        for act in plan:
-            print(act)
         print("Plan found with %d actions in %.2f seconds" % (len(plan), elapsed))
     else:
         print("Could not find a plan in %.2f seconds" % elapsed)
