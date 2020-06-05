@@ -121,23 +121,24 @@ def max_level(state, planning_problem):
     pg_init.set_proposition_layer(prop_layer_init)   #update the new plan graph level with the the proposition layer
     """
     "*** YOUR CODE HERE ***"
+    level = 0
+    infinity = float('inf')
     prop_layer_init = PropositionLayer()  # create a new proposition layer
     for prop in state:
         prop_layer_init.add_proposition(prop)  # update the proposition layer with the propositions of the state
     pg_init = PlanGraphLevel()  # create a new plan graph level (level is the action layer and the propositions layer)
     pg_init.set_proposition_layer(prop_layer_init)  # update the new plan graph level with the the proposition layer
-    level = 0
-    infinity = float('inf')
-    proposition_layer = pg_init.get_proposition_layer()
-    current_props = proposition_layer.get_propositions()
+    current_props = pg_init.get_proposition_layer().get_propositions()
     plans_list = [pg_init]
-    while not is_fixed(plans_list, level) and not planning_problem.is_goal_state(current_props):
-        pg_init = PlanGraphLevel()
-        current_props = pg_init.expand_without_mutex(pg_init)
-        plans_list += [pg_init]
-        level += 1
-    if is_fixed(plans_list, level):
-        return infinity
+    while not planning_problem.is_goal_state(current_props):
+        if is_fixed(plans_list, level):
+            return infinity
+        else:
+            next_pg_init = PlanGraphLevel()
+            next_pg_init.expand_without_mutex(pg_init)
+            pg_init = next_pg_init
+            plans_list += [pg_init]
+            level += 1
     return level
 
 
@@ -192,6 +193,8 @@ if __name__ == '__main__':
     plan = a_star_search(prob, heuristic)
     elapsed = time.clock() - start
     if plan is not None:
+        for act in plan:
+            print(act)
         print("Plan found with %d actions in %.2f seconds" % (len(plan), elapsed))
     else:
         print("Could not find a plan in %.2f seconds" % elapsed)
