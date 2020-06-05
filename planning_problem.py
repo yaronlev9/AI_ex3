@@ -6,8 +6,8 @@ from pgparser import PgParser
 from action import Action
 
 try:
-    from search import SearchProblem
-    from search import a_star_search
+    from CPF.search import SearchProblem
+    from CPF.search import a_star_search
 
 except:
     try:
