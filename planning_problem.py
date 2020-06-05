@@ -6,8 +6,8 @@ from pgparser import PgParser
 from action import Action
 
 try:
-    from CPF.search import SearchProblem
-    from CPF.search import a_star_search
+    from search import SearchProblem
+    from search import a_star_search
 
 except:
     try:
@@ -67,20 +67,17 @@ class PlanningProblem:
         self.expanded += 1
         "*** YOUR CODE HERE ***"
         result = []
-        flag = False
         for action in self.actions:
-            if not action.is_noop():
-                for pre_cond in action.get_pre():
-                    if pre_cond not in state:
-                        flag = True
-                        break
-                if not flag:
-                    successor = state
+            if (not action.is_noop()) and action.all_preconds_in_list(state):
+                    propositions = set(state)
                     for prop in action.get_add():
-                        if prop not in action.get_delete() and prop not in state:
-                            successor += prop
-                    result.append((successor, action, 1))
-                flag = False
+                        if prop not in state:
+                            propositions.add(prop)
+                    new_propositions = set()
+                    for prop in propositions:
+                        if prop not in action.get_delete():
+                            new_propositions.add(prop)
+                    result.append((frozenset(new_propositions), action, 1))
         return result
 
     @staticmethod
