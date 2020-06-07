@@ -76,7 +76,6 @@ class GraphPlan(object):
 
         plan_solution = self.extract(self.graph, self.goal, level)
         # try to extract a plan since all of the goal propositions are in current graph level, and are not mutex
-
         while plan_solution is None:  # while we didn't extract a plan successfully
             level = level + 1
             self.no_goods.append([])
@@ -257,11 +256,11 @@ if __name__ == '__main__':
         problem = str(sys.argv[2])
 
     gp = GraphPlan(domain, problem)
-    # start = time.clock()
+    start = time.clock()
     plan = gp.graph_plan()
-    print("Plan found with %d actions" % (len([act for act in plan if not act.is_noop()])))
-    # elapsed = time.clock() - start
-    # if plan is not None:
-    #     print("Plan found with %d actions in %.2f seconds" % (len([act for act in plan if not act.is_noop()]), elapsed))
-    # else:
-        # print("Could not find a plan in %.2f seconds" % elapsed)
+    #print("Plan found with %d actions" % (len([act for act in plan if not act.is_noop()])))
+    elapsed = time.clock() - start
+    if plan is not None:
+        print("Plan found with %d actions in %.2f seconds" % (len([act for act in plan if not act.is_noop()]), elapsed))
+    else:
+        print("Could not find a plan in %.2f seconds" % elapsed)
