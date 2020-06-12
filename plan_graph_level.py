@@ -101,13 +101,19 @@ class PlanGraphLevel(object):
         self.proposition_layer.add_proposition(prop) adds the proposition prop to the current layer
 
         """
+        dic = dict()
         current_layer_actions = self.action_layer.get_actions()
         "*** YOUR CODE HERE ***"
         for action in current_layer_actions:
             for proposition in action.get_add():
-                if proposition not in self.proposition_layer.get_propositions():
-                    self.proposition_layer.add_proposition(proposition)
-                proposition.add_producer(action)
+                if proposition.get_name() not in dic.values():
+                    new_prop = Proposition(proposition.get_name())
+                    self.proposition_layer.add_proposition(new_prop)
+                    dic[new_prop] = new_prop.get_name()
+                keys = list(dic.keys())
+                values = list(dic.values())
+                new_prop = keys[values.index(proposition.name)]
+                new_prop.add_producer(action)
 
     def update_mutex_proposition(self):
         """
@@ -139,12 +145,24 @@ class PlanGraphLevel(object):
         """
         previous_proposition_layer = previous_layer.get_proposition_layer()
         previous_layer_mutex_proposition = previous_proposition_layer.get_mutex_props()
-
         "*** YOUR CODE HERE ***"
         self.update_action_layer(previous_proposition_layer)
         self.update_mutex_actions(previous_layer_mutex_proposition)
         self.update_proposition_layer()
         self.update_mutex_proposition()
+        # print("actions")
+        # for action in self.action_layer.get_actions():
+        #     print(action, end = " ")
+        # print("mutex_action")
+        # for mutex_action in self.action_layer.get_mutex_actions():
+        #    print(mutex_action, end = " ")
+        # print("props")
+        # for prop in self.proposition_layer.get_propositions():
+        #    print(prop, end = " ")
+        # print("mutex_props")
+        # for mutex_prop in self.proposition_layer.get_mutex_props():
+        #    print(mutex_prop, end = " ")
+        # print("end")
 
     def expand_without_mutex(self, previous_layer):
         """

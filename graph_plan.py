@@ -20,7 +20,6 @@ class GraphPlan(object):
         p = PgParser(_domain, _problem)
         self.actions, self.propositions = p.parse_actions_and_propositions()
         # list of all the actions and list of all the propositions
-
         self.initial_state, self.goal = p.parse_problem()
         # the initial state and the goal state are lists of propositions
 
@@ -84,7 +83,7 @@ class GraphPlan(object):
             self.graph.append(pg_next)
             plan_solution = self.extract(self.graph, self.goal, level)  # try to extract a plan again
             if plan_solution is None and self.is_fixed(level):  # if failed and reached fixed point
-                if len(self.no_goods[level - 1]) == len(self.no_goods[level]):
+                if size_no_good == len(self.no_goods[level]):
                     # if size of nogood didn't change, means there's nothing more to do. We failed.
                     return None
                 size_no_good = len(self.no_goods[level])  # we didn't fail yet! update size of no good
@@ -258,7 +257,6 @@ if __name__ == '__main__':
     gp = GraphPlan(domain, problem)
     start = time.clock()
     plan = gp.graph_plan()
-    #print("Plan found with %d actions" % (len([act for act in plan if not act.is_noop()])))
     elapsed = time.clock() - start
     if plan is not None:
         print("Plan found with %d actions in %.2f seconds" % (len([act for act in plan if not act.is_noop()]), elapsed))
